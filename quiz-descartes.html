@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz – Discours de la méthode, René Descartes</title>
+<style>
+:root{--ink:#101B2D;--ink2:#34425A;--paper:#EEF0F4;--card:#fff;--line:#D5D9E2;--accent:#7A1F2B;--accent2:#5E1620;--ok:#1E6B4A;--okbg:#E5F3EC;--ko:#A32A2A;--kobg:#FBE9E9;--mid:#8A5A00;--midbg:#FFF3DC}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55}
+h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #2B5FD9;outline-offset:2px}
+.hidden{display:none!important}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:.8rem 1.5rem;font-weight:600}
+.btn:hover{background:var(--accent2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink2)}
+.btn.ghost:hover{background:#fff}
+
+/* Connexion */
+#login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.l-side{background:var(--ink);color:#E8ECF4;padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:space-between}
+.l-side .big{font-size:clamp(2rem,4.2vw,3.4rem);line-height:1.15;max-width:15ch}
+.l-side p{max-width:40ch;color:#B7C0D2;margin:0}
+.l-form{display:flex;align-items:center;justify-content:center;padding:2rem}
+.l-box{width:100%;max-width:400px}
+.l-box h2{font-size:1.7rem;margin:0 0 .4rem}
+.l-box p{color:var(--ink2);margin:0 0 1.6rem}
+label{display:block;font-weight:600;margin-bottom:.4rem}
+input[type=text],textarea{width:100%;font:inherit;padding:.8rem .9rem;border:1px solid #9AA3B5;border-radius:6px;background:#fff;color:var(--ink)}
+.err{color:var(--ko);background:var(--kobg);border-radius:6px;padding:.7rem .9rem;margin:1rem 0 0;font-size:.95rem}
+.l-box .btn{width:100%;margin-top:1.2rem}
+.note{font-size:.85rem;color:var(--ink2);margin-top:1.2rem}
+
+/* En-tête */
+.top{background:var(--ink);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.5rem;gap:1rem}
+.top .who{font-size:.95rem;color:#C7CFDF}
+.top button{background:transparent;color:#fff;border:1px solid #5B6A86;border-radius:6px;padding:.4rem .9rem}
+.wrap{max-width:860px;margin:0 auto;padding:2rem 1.2rem 4rem}
+
+/* Accueil */
+.hero{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:2.4rem 2.2rem}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);margin:0 0 .6rem;line-height:1.15}
+.hero p{color:var(--ink2);max-width:60ch}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:1.6rem 0}
+.facts div{background:#fff;padding:1rem 1.2rem}
+.facts b{display:block;font-family:Georgia,serif;font-size:1.6rem}
+.facts span{color:var(--ink2);font-size:.9rem}
+.parts{margin:0 0 1.6rem;padding-left:1.2rem;color:var(--ink2)}
+.parts li{margin:.25rem 0}
+
+/* Quiz */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.8rem;flex-wrap:wrap}
+.qhead .meta{color:var(--ink2);font-size:.95rem}
+.timer{font-family:Georgia,serif;font-size:1.7rem;font-variant-numeric:tabular-nums}
+.timer.low{color:var(--ko)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:1.4rem}
+.bar i{display:block;height:100%;background:var(--ink);width:100%}
+.bar.low i{background:var(--ko)}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.8rem}
+.qcard .kind{font-size:.9rem;color:var(--ink2);margin-bottom:.6rem}
+.qcard h2{font-size:1.35rem;line-height:1.4;margin:0 0 1.3rem}
+.vf{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.vf button{padding:1rem;border:1.5px solid var(--ink2);background:#fff;border-radius:8px;font-weight:600;font-size:1.05rem}
+.vf button:hover:not(:disabled){background:var(--ink);color:#fff}
+.vf button:disabled{cursor:default}
+.vf button.sel{background:var(--ink);color:#fff}
+textarea{resize:vertical}
+.hint{font-size:.85rem;color:var(--ink2);margin:.4rem 0 1rem}
+.fb{margin-top:1.4rem;border-radius:8px;padding:1rem 1.2rem}
+.fb.ok{background:var(--okbg);color:#0F3F2B}
+.fb.ko{background:var(--kobg);color:#6B1B1B}
+.fb.mid{background:var(--midbg);color:#5C3B00}
+.fb b{font-family:Georgia,serif;font-size:1.1rem}
+.fb p{margin:.5rem 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+.chip{font-size:.85rem;padding:.2rem .6rem;border-radius:99px;background:#fff;border:1px solid currentColor}
+.model{background:#fff;border-radius:6px;padding:.8rem 1rem;margin-top:.8rem;color:var(--ink);font-size:.95rem;white-space:pre-line}
+.next{margin-top:1.2rem;text-align:right}
+
+/* Résultats */
+.score{font-family:Georgia,serif;font-size:3.4rem;line-height:1}
+.recap{list-style:none;padding:0;margin:1.5rem 0}
+.recap li{background:#fff;border:1px solid var(--line);border-left-width:5px;border-radius:6px;padding:.8rem 1rem;margin:.5rem 0;font-size:.95rem}
+.recap li.ok{border-left-color:var(--ok)}.recap li.ko{border-left-color:var(--ko)}.recap li.mid{border-left-color:#C98A00}
+.recap small{color:var(--ink2);display:block;margin-top:.2rem}
+.actions{display:flex;gap:.8rem;flex-wrap:wrap}
+
+@media(max-width:760px){
+ #login{grid-template-columns:1fr}
+ .l-side{padding:2rem 1.5rem;gap:1.5rem}
+ .facts{grid-template-columns:1fr}
+ .hero{padding:1.6rem 1.2rem}.qcard{padding:1.2rem}
+}
+@media(prefers-reduced-motion:no-preference){.bar i{transition:width 1s linear}}
+</style>
+</head>
+<body>
+
+<!-- CONNEXION -->
+<main id="login">
+  <section class="l-side">
+    <div class="serif" style="font-size:1.1rem;color:#B7C0D2">Philosophie · Terminale</div>
+    <div>
+      <div class="big serif">« Je pense, donc je suis. »</div>
+      <p style="margin-top:1.2rem">René Descartes, Discours de la méthode, quatrième partie (1637).</p>
+    </div>
+    <p>Quiz de révision réservé aux élèves inscrits.</p>
+  </section>
+  <section class="l-form">
+    <form class="l-box" id="loginForm" autocomplete="off">
+      <h2>Connexion</h2>
+      <p>Saisissez votre nom complet tel qu’il figure sur la liste de la classe.</p>
+      <label for="name">Nom complet</label>
+      <input type="text" id="name" placeholder="Ex. : Nom Postnom Prénom" required>
+      <div class="err hidden" id="loginErr" role="alert"></div>
+      <button class="btn" type="submit">Se connecter</button>
+      <div class="note">L’ordre des noms, les majuscules et les accents n’ont pas d’importance.</div>
+    </form>
+  </section>
+</main>
+
+<!-- ACCUEIL -->
+<div id="home" class="hidden">
+  <header class="top"><span class="who" id="whoHome"></span><button id="logout1">Se déconnecter</button></header>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Discours de la méthode</h1>
+      <p>Quiz de révision sur l’œuvre de René Descartes : les six parties, les quatre règles de la méthode, le doute, le cogito et la morale par provision.</p>
+      <div class="facts">
+        <div><b id="nbq">0</b><span>questions</span></div>
+        <div><b>2 min 30</b><span>par question</span></div>
+        <div><b>2 formats</b><span>vrai ou faux, réponse écrite</span></div>
+      </div>
+      <ol class="parts">
+        <li>Première partie : le bon sens et les études</li>
+        <li>Deuxième partie : les quatre règles de la méthode</li>
+        <li>Troisième partie : la morale par provision</li>
+        <li>Quatrième partie : le doute, le cogito, Dieu</li>
+        <li>Cinquième partie : physique, corps et âme, l’homme et la machine</li>
+        <li>Sixième partie : le progrès des sciences et la publication</li>
+        <li>Introduction de l’édition : vie de Descartes et composition de l’ouvrage</li>
+      </ol>
+      <p style="font-size:.95rem">Une fois la question affichée, le chronomètre démarre. À la fin du temps, la réponse saisie est validée automatiquement.</p>
+      <p id="lastScore" class="hidden" style="font-weight:600;color:var(--ink)"></p>
+      <button class="btn" id="start">Commencer le quiz</button>
+    </section>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="hidden">
+  <header class="top"><span class="who" id="whoQuiz"></span><button id="logout2">Se déconnecter</button></header>
+  <div class="wrap">
+    <div class="qhead">
+      <div class="meta" id="qmeta"></div>
+      <div class="timer" id="timer" aria-live="off">02:30</div>
+    </div>
+    <div class="bar" id="bar"><i id="barI"></i></div>
+    <div class="qcard" id="qcard"></div>
+  </div>
+</div>
+
+<!-- RÉSULTATS -->
+<div id="result" class="hidden">
+  <header class="top"><span class="who" id="whoRes"></span><button id="logout3">Se déconnecter</button></header>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Résultat</h1>
+      <div class="score" id="scoreTxt"></div>
+      <p id="scoreMsg"></p>
+      <div class="actions">
+        <button class="btn" id="again">Recommencer</button>
+        <button class="btn ghost" id="toHome">Retour à l’accueil</button>
+      </div>
+      <ul class="recap" id="recap"></ul>
+    </section>
+  </div>
+</div>
+
+<script>
+/* ---------- Liste des élèves autorisés ---------- */
+const ALLOWED = [
+  "BIAY KAPINGA PRODIGE","FRANCK TSHISUMA WOTO","WANGA YULE FRANÇOIS","PAKA MOTUMBE Jefferson",
+  "Myriam Shende bela","Jenny IPOMA SHOLE","DIVIN MASANKA KAPONGO","Thezianne somwe kabangie",
+  "LUVILUKA NSAKALA ELEAZAR","Shawed mata TSHIKANGU"
+];
+const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z\s]/g," ").replace(/\s+/g," ").trim();
+const toks = s => norm(s).split(" ").filter(Boolean);
+function findUser(input){
+  const t = toks(input); if(!t.length) return null;
+  const key = [...t].sort().join(" ");
+  for(const n of ALLOWED){
+    const nt = toks(n);
+    if([...nt].sort().join(" ")===key) return n;
+  }
+  if(t.length>=2){
+    for(const n of ALLOWED){ const nt=toks(n); if(t.every(x=>nt.includes(x))) return n; }
+  }
+  return null;
+}
+
+/* ---------- Questions ---------- */
+const TIME = 150; // 2 min 30
+const Q = [
+ // Partie 1
+ {p:"Première partie",t:"vf",q:"Descartes affirme que le bon sens est la chose du monde la mieux partagée.",a:true,e:"Dès la première phrase, il pose que la puissance de bien juger et de distinguer le vrai du faux, c’est-à-dire la raison, est naturellement égale en tous les hommes."},
+ {p:"Première partie",t:"vf",q:"Selon Descartes, la diversité de nos opinions vient de ce que certains hommes ont plus de raison que d’autres.",a:false,e:"Elle vient de ce que nous conduisons nos pensées par des voies différentes et ne considérons pas les mêmes choses. La raison est égale, c’est son usage qui varie."},
+ {p:"Première partie",t:"vf",q:"« Ce n’est pas assez d’avoir l’esprit bon, mais le principal est de l’appliquer bien. »",a:true,e:"C’est le point de départ de la méthode : une bonne raison ne suffit pas, il faut une règle pour la bien conduire."},
+ {p:"Première partie",t:"txt",q:"Que désigne Descartes par « le bon sens » dans la première phrase du Discours ?",g:[{l:"raison / faculté de juger",k:["raison","juger","jugement"]},{l:"distinguer le vrai du faux",k:["vrai","faux","verite"]},{l:"égale en tous",k:["egal","tous","partag","chacun","universel"]}],min:.67,m:"Le bon sens est la raison : la puissance de bien juger et de distinguer le vrai du faux. Elle est naturellement égale en tous les hommes."},
+ {p:"Première partie",t:"vf",q:"Dans ses études à La Flèche, Descartes trouve que toutes les disciplines enseignées offrent des certitudes solides.",a:false,e:"Il est déçu par les lettres et la philosophie scolastique, pleines de disputes. Seules les mathématiques le séduisent, pour la certitude et l’évidence de leurs raisons."},
+ // Partie 2
+ {p:"Deuxième partie",t:"vf",q:"Descartes a conçu les premières idées de sa méthode dans un poêle, en Allemagne, pendant l’hiver.",a:true,e:"Retenu par l’hiver, il reste enfermé dans un « poêle » (pièce chauffée) et médite à loisir, seul avec ses pensées."},
+ {p:"Deuxième partie",t:"vf",q:"Selon Descartes, un ouvrage composé de plusieurs pièces et fait de la main de plusieurs maîtres est souvent plus parfait que celui d’un seul.",a:false,e:"C’est l’inverse : les ouvrages d’un seul sont plus achevés (comparaison avec les villes ou les lois). L’unité du dessein vient d’une seule raison."},
+ {p:"Deuxième partie",t:"vf",q:"La première règle de la méthode est la règle de l’évidence.",a:true,e:"Ne recevoir aucune chose pour vraie si l’on ne la connaît évidemment pour telle ; éviter la précipitation et la prévention ; ne rien admettre qui ne soit clair et distinct."},
+ {p:"Deuxième partie",t:"vf",q:"La règle du dénombrement (faire des revues générales pour ne rien omettre) est la deuxième règle.",a:false,e:"Le dénombrement est la quatrième règle. La deuxième est l’analyse : diviser chaque difficulté en autant de parcelles qu’il est nécessaire."},
+ {p:"Deuxième partie",t:"txt",q:"Quelle règle consiste à diviser chaque difficulté en autant de parcelles qu’il se peut pour mieux la résoudre ? Donnez son nom et expliquez-la en une phrase.",g:[{l:"analyse / division",k:["analys","divis","diviser","decompos"]},{l:"parcelles / parties simples",k:["parcelle","partie","simple","element","petit"]},{l:"mieux résoudre",k:["resoud","resolu","comprend","facilit","simplif"]}],min:.67,m:"C’est la deuxième règle, la règle de l’analyse : décomposer un problème complexe en parties plus simples afin de mieux le résoudre."},
+ {p:"Deuxième partie",t:"txt",long:true,q:"Expliquez proprement les quatre règles de la méthode développée par René Descartes.",g:[{l:"1. Évidence (clair et distinct, éviter précipitation et prévention)",k:["evidence","evident","clair","distinct","precipitation","prevention"]},{l:"2. Analyse (diviser les difficultés)",k:["analys","divis","parcelle","decompos"]},{l:"3. Ordre / synthèse (du simple au complexe)",k:["ordre","simple","degre","compos","synthese"]},{l:"4. Dénombrement (revues complètes, ne rien omettre)",k:["denombrement","revue","omettre","omission","omis","complet","exhaustif"]}],min:.75,m:"1. Évidence : ne tenir pour vrai que ce qui se présente si clairement et distinctement à l’esprit qu’on ne peut en douter ; éviter la précipitation et les préjugés.\n2. Analyse : diviser chaque difficulté en autant de parcelles qu’il est utile pour la résoudre.\n3. Ordre (synthèse) : conduire ses pensées des objets les plus simples aux plus composés, en supposant un ordre même là où il n’y en a pas.\n4. Dénombrement : faire des revues si entières et si générales qu’on soit sûr de ne rien omettre."},
+ {p:"Deuxième partie",t:"txt",long:true,q:"Montrez en quoi chacune des quatre règles traduit la volonté d’universaliser la raison et de fonder la science sur la clarté et l’évidence.",g:[{l:"raison universelle (égale en tous, valable partout)",k:["universel","universalis","tous","chacun","egal","partout","bon sens"]},{l:"évidence : critère de vérité clair et distinct",k:["evidence","evident","clair","distinct","douter","doute"]},{l:"analyse et ordre : démarche rigoureuse du simple au complexe",k:["analys","divis","simple","ordre","complexe","compos"]},{l:"dénombrement : vérification, certitude, rien d’omis",k:["denombrement","revue","verifi","omettre","omis","complet","certitude","certain"]},{l:"fonder la science / la connaissance",k:["science","fonde","fondement","connaissance","methode","savoir"]}],min:.6,m:"Les règles ne dépendent ni de l’autorité ni de la tradition : elles s’appuient seulement sur la raison, égale en tous. L’évidence fait de la clarté et de la distinction le critère de toute vérité. L’analyse et l’ordre décrivent une démarche que tout esprit peut refaire, du simple au complexe. Le dénombrement garantit un résultat complet et vérifiable. Ainsi la science repose sur des certitudes que chacun peut contrôler par sa propre raison."},
+ {p:"Deuxième partie",t:"vf",q:"Descartes juge que la méthode doit reposer sur un grand nombre de préceptes de logique pour être efficace.",a:false,e:"Il en retient seulement quatre, comme un État est mieux réglé quand il a peu de lois, mais strictement observées."},
+ // Partie 3
+ {p:"Troisième partie",t:"vf",q:"La morale par provision est une morale définitive que Descartes propose comme règle absolue de conduite.",a:false,e:"Elle est provisoire : un abri pour bien agir pendant qu’il remet en doute ses opinions, comme on se loge ailleurs avant de rebâtir sa maison."},
+ {p:"Troisième partie",t:"txt",long:true,q:"Citez les maximes de la morale par provision.",g:[{l:"obéir aux lois et coutumes, religion, modération",k:["loi","coutume","obeir","religion","moderation","moder"]},{l:"être ferme et résolu (voyageur dans la forêt)",k:["ferme","resolu","resolution","foret","voyageur","constan"]},{l:"se vaincre plutôt que la fortune, changer ses désirs",k:["vaincre","fortune","desir","ordre du monde"]},{l:"cultiver sa raison / chercher la vérité",k:["cultiver","raison","verite","occuper","vie"]}],min:.75,m:"1. Obéir aux lois et coutumes du pays, garder la religion, suivre les opinions les plus modérées.\n2. Être le plus ferme et le plus résolu possible dans ses actions (comme le voyageur égaré dans la forêt qui marche droit).\n3. Tâcher de se vaincre plutôt que la fortune et de changer ses désirs plutôt que l’ordre du monde.\n4. Employer sa vie à cultiver sa raison et avancer dans la connaissance de la vérité."},
+ // Partie 4
+ {p:"Quatrième partie",t:"vf",q:"Le doute de Descartes est un scepticisme définitif : il conclut qu’on ne peut rien connaître.",a:false,e:"Le doute est méthodique et provisoire. Il sert à trouver une vérité indubitable, et non à nier toute connaissance."},
+ {p:"Quatrième partie",t:"txt",q:"Quel est le rôle du doute dans la quatrième partie du Discours ?",g:[{l:"rejeter ce qui est douteux",k:["rejet","rejeter","douteux","faux","ecarter"]},{l:"chercher une vérité certaine / indubitable",k:["certain","certitude","indubitable","verite","fondement","solide"]},{l:"méthodique / provisoire / outil",k:["methodique","provisoire","outil","moyen","methode","hyperbolique"]}],min:.67,m:"Le doute méthodique consiste à rejeter tout ce qui peut être mis en doute (sens, raisonnements, rêve) afin de trouver une vérité indubitable. Il est un moyen, pas une fin."},
+ {p:"Quatrième partie",t:"vf",q:"Du « Je pense, donc je suis », Descartes tire la première vérité certaine de sa philosophie.",a:true,e:"Même en supposant tout faux, celui qui pense doit bien être quelque chose. Cette vérité résiste aux plus extravagantes suppositions des sceptiques."},
+ {p:"Quatrième partie",t:"vf",q:"Selon Descartes, les sens suffisent à fonder la vérité de la connaissance.",a:false,e:"Les sens nous trompent parfois, c’est pourquoi il les écarte. Les vérités solides sont celles que l’entendement conçoit clairement et distinctement."},
+ {p:"Quatrième partie",t:"txt",q:"Quelle règle générale de vérité Descartes tire-t-il de la certitude du cogito ?",g:[{l:"choses conçues très clairement et distinctement",k:["clair","distinct"]},{l:"sont vraies",k:["vrai","vraies","verite"]}],min:1,m:"Les choses que nous concevons très clairement et très distinctement sont toutes vraies."},
+ {p:"Quatrième partie",t:"txt",q:"Comment Descartes prouve-t-il l’existence de Dieu à partir de l’idée de parfait ?",g:[{l:"je suis imparfait / je doute",k:["imparfait","doute","fini","limite"]},{l:"idée de parfait / d’infini en moi",k:["parfait","infini","idee"]},{l:"elle ne peut venir de moi, mais de Dieu",k:["dieu","cause","vient","venir","origine","exister","existe"]}],min:.67,m:"Étant imparfait, je ne peux être la cause de l’idée d’un être parfait que je trouve en moi. Cette idée a donc été mise en moi par un être réellement parfait : Dieu existe."},
+ {p:"Quatrième partie",t:"vf",q:"Dieu garantit la vérité des idées claires et distinctes.",a:true,e:"Dieu, être parfait, n’est pas trompeur : c’est ce qui donne un fondement à la vérité de nos idées claires et distinctes."},
+ // Partie 5
+ {p:"Cinquième partie",t:"vf",q:"Selon Descartes, les animaux possèdent une âme raisonnable comparable à celle de l’homme.",a:false,e:"Il les assimile à des machines qui agissent par disposition des organes, sans raison ni langage véritables (thèse de l’animal-machine)."},
+ {p:"Cinquième partie",t:"txt",q:"Quels sont les deux moyens par lesquels Descartes distingue un homme véritable d’une machine qui lui ressemblerait ?",g:[{l:"le langage / la parole / les signes",k:["langage","parole","parler","signe","mot"]},{l:"agir par connaissance, raison instrument universel",k:["raison","connaissance","universel","agir","action","comportement","varie","situation"]}],min:1,m:"Une machine ne pourrait jamais user de paroles ou de signes pour exprimer ses pensées, ni agir en toute circonstance par connaissance : la raison est un instrument universel, alors que les organes ont besoin d’une disposition particulière pour chaque action."},
+ {p:"Cinquième partie",t:"vf",q:"Descartes soutient que l’âme est distincte du corps et ne meurt pas avec lui.",a:true,e:"Distincte du corps (substance pensante), elle n’est pas soumise à la mort comme la machine corporelle."},
+ // Partie 6
+ {p:"Sixième partie",t:"vf",q:"La condamnation de Galilée a poussé Descartes à retarder la publication de son traité Le Monde.",a:true,e:"Apprenant la condamnation de Galilée en 1633, il renonce à publier son traité, par prudence."},
+ {p:"Sixième partie",t:"txt",q:"Que signifie l’expression « comme maîtres et possesseurs de la nature » ?",g:[{l:"connaissance de la nature",k:["connaiss","savoir","science","comprendre","nature"]},{l:"usage pratique, techniques, médecine, santé",k:["pratique","technique","utile","medecine","sante","applic","inventi","industr"]},{l:"progrès / bien de l’humanité",k:["progres","humanite","bien","homme","bonheur","amelior","conserv"]}],min:.67,m:"La connaissance scientifique doit déboucher sur une philosophie pratique : elle nous permet d’agir sur la nature (techniques, médecine, santé) pour le bien et le progrès de l’humanité."},
+ {p:"Sixième partie",t:"txt",q:"Pourquoi Descartes écrit-il le Discours en français plutôt qu’en latin ?",g:[{l:"être lu de tous, pas seulement des savants",k:["tous","savant","accessible","public","large","femme","lisible","comprendre"]},{l:"raison naturelle / jugement personnel plutôt que livres anciens",k:["raison","naturel","jugement","livres anciens","ancien","autorite"]}],min:.5,m:"Il écrit en français pour être lu de tous ceux qui usent de leur raison naturelle, et non seulement des savants qui ne croient qu’aux livres anciens."},
+ {p:"Sixième partie",t:"vf",q:"Le Discours de la méthode a été publié en 1637, à Leyde, comme préface à la Dioptrique, aux Météores et à la Géométrie.",a:true,e:"Le Discours est la préface de ces trois essais scientifiques, publiés sans nom d’auteur à Leyde."}
+,
+ // Introduction de l'édition (T. V. Charpentier)
+ {p:"Introduction de l’édition",t:"vf",q:"Descartes a fait ses études au collège des Jésuites de La Flèche, l’une des écoles les plus célèbres de son temps.",a:true,e:"Né en 1596 à La Haye, en Touraine, il y étudie et en sort à seize ans, très instruit mais insatisfait de ce qu’il y a appris."},
+ {p:"Introduction de l’édition",t:"vf",q:"Le Discours de la méthode devait former, avec la Dioptrique, les Météores et la Géométrie, un ouvrage en quatre parties.",a:true,e:"Le Discours expose la partie philosophique ; les trois autres traités sont des applications de la méthode."},
+ {p:"Introduction de l’édition",t:"txt",q:"Quel est le rôle du Discours par rapport à la Dioptrique, aux Météores et à la Géométrie ?",g:[{l:"le Discours expose la méthode / la philosophie",k:["methode","philosoph","preface","introduction","expose"]},{l:"les trois traités sont des applications",k:["applic","exemple","traite","essai","illustr","prouv","demontr"]}],min:1,m:"Le Discours expose la partie philosophique, c’est-à-dire la méthode. La Dioptrique, les Météores et la Géométrie en sont des applications qui prouvent par des exemples la puissance de cette méthode."},
+ {p:"Introduction de l’édition",t:"vf",q:"La Dioptrique expose la loi de la réfraction de la lumière, connue sous le nom de loi de Descartes.",a:true,e:"Elle donne aussi la première théorie scientifique de la vision et explique le fonctionnement des lunettes d’approche."},
+ {p:"Introduction de l’édition",t:"vf",q:"La Géométrie applique l’algèbre à l’étude des courbes, ce qui est une science entièrement nouvelle à l’époque.",a:true,e:"Descartes y réforme l’algèbre et fonde la géométrie analytique, qui permet de trouver les tangentes à une courbe définie par son équation."},
+ {p:"Introduction de l’édition",t:"txt",q:"Pourquoi Descartes interrompt-il son grand ouvrage vers 1629-1633, et pourquoi écrit-il alors le Discours ?",g:[{l:"condamnation de Galilée",k:["galilee","condamn"]},{l:"il s’arrête / renonce à publier son ouvrage",k:["arret","interromp","renonc","retard","abandon","prudence","peur"]},{l:"donner satisfaction à ses amis / aperçu de son système",k:["ami","apercu","systeme","methode","satisf","expos"]}],min:.67,m:"Troublé par la condamnation de Galilée, Descartes s’arrête dans son grand ouvrage. Pour donner satisfaction à ses amis, il compose le Discours : un aperçu de son système, l’exposé de sa méthode et des exemples de sa puissance."},
+ {p:"Introduction de l’édition",t:"vf",q:"La méthode de Descartes est générale : elle s’applique à toutes les questions, quelles qu’elles soient.",a:true,e:"Elle est si compréhensive que l’analyse des anciens, l’algèbre et la logique scolastique n’en sont que des applications particulières."},
+ {p:"Introduction de l’édition",t:"vf",q:"Selon l’introduction de cette édition, les Règles pour la direction de l’esprit sont un commentaire naturel du Discours de la méthode.",a:true,e:"Ce texte de Descartes aide à comprendre la méthode exposée dans le Discours."}
+];
+
+/* ---------- État et utilitaires ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let user=null, order=[], idx=0, results=[], deadline=0, tick=null, answered=false;
+
+function store(k,v){ try{ v===null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){} }
+function load(k){ try{ return localStorage.getItem(k);}catch(e){ return null; } }
+function scoreKey(){ return "descartes_scores_"+norm(user).replace(/ /g,"_"); }
+function getScores(){ try{ return JSON.parse(load(scoreKey())||"[]"); }catch(e){ return []; } }
+function saveScore(tot,max){
+  const a=getScores(); a.push({tot,max,d:new Date().toLocaleDateString("fr-FR")});
+  store(scoreKey(),JSON.stringify(a.slice(-20)));
+}
+function showLast(){
+  const a=getScores(), el=$("lastScore");
+  if(!a.length){ el.classList.add("hidden"); return; }
+  const l=a[a.length-1], best=a.reduce((m,x)=>Math.max(m,x.tot/x.max),0);
+  const f=n=>String(n).replace(".",",");
+  el.textContent=`Dernier résultat : ${f(l.tot)} / ${l.max} (${l.d}). Meilleur score : ${Math.round(best*100)} %. Essais enregistrés : ${a.length}.`;
+  el.classList.remove("hidden");
+}
+function show(id){ ["login","home","quiz","result"].forEach(x=>$(x).classList.toggle("hidden",x!==id)); window.scrollTo(0,0); }
+function shuffle(a){ a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+/* ---------- Connexion ---------- */
+$("loginForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const u=findUser($("name").value);
+  const err=$("loginErr");
+  if(!u){ err.textContent="Ce nom ne figure pas sur la liste autorisée. Vérifiez l’orthographe de votre nom complet."; err.classList.remove("hidden"); return; }
+  err.classList.add("hidden"); user=u; store("user",u); enterHome();
+});
+function enterHome(){
+  ["whoHome","whoQuiz","whoRes"].forEach(i=>$(i).textContent="Connecté : "+user);
+  $("nbq").textContent=Q.length; showLast(); show("home");
+}
+function logout(){ clearInterval(tick); user=null; store("user",null); $("name").value=""; show("login"); }
+["logout1","logout2","logout3"].forEach(i=>$(i).addEventListener("click",logout));
+$("toHome").addEventListener("click",()=>{ showLast(); show("home"); });
+
+/* ---------- Déroulement du quiz ---------- */
+$("start").addEventListener("click",startQuiz);
+$("again").addEventListener("click",startQuiz);
+function startQuiz(){ order=shuffle(Q.map((_,i)=>i)); idx=0; results=[]; show("quiz"); showQ(); }
+
+function showQ(){
+  const q=Q[order[idx]]; answered=false;
+  $("qmeta").textContent=`Question ${idx+1} sur ${Q.length} · ${q.p}`;
+  let html=`<div class="kind">${q.t==="vf"?"Assertion : vrai ou faux ?":"Réponse écrite"}</div><h2>${esc(q.q)}</h2>`;
+  if(q.t==="vf"){
+    html+=`<div class="vf"><button id="bV">Vrai</button><button id="bF">Faux</button></div>`;
+  }else{
+    html+=`<label for="ans" class="hint" style="font-weight:400">Écrivez votre réponse au clavier, puis validez (Ctrl + Entrée).</label>
+    <textarea id="ans" rows="${q.long?9:4}" placeholder="Votre réponse…"></textarea>
+    <div style="margin-top:1rem"><button class="btn" id="bOk">Valider ma réponse</button></div>`;
+  }
+  html+=`<div id="fbox"></div>`;
+  $("qcard").innerHTML=html;
+  if(q.t==="vf"){ $("bV").onclick=()=>finishVF(true); $("bF").onclick=()=>finishVF(false); }
+  else{
+    $("bOk").onclick=()=>finishTxt(false);
+    $("ans").addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)) finishTxt(false); });
+    $("ans").focus();
+  }
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(tick); deadline=Date.now()+TIME*1000; paint();
+  tick=setInterval(()=>{ paint(); if(Date.now()>=deadline){ clearInterval(tick); timeUp(); } },250);
+}
+function paint(){
+  const left=Math.max(0,Math.ceil((deadline-Date.now())/1000));
+  $("timer").textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");
+  const low=left<=30; $("timer").classList.toggle("low",low); $("bar").classList.toggle("low",low);
+  $("barI").style.width=(left/TIME*100)+"%";
+}
+function timeUp(){
+  if(answered) return; const q=Q[order[idx]];
+  if(q.t==="txt") finishTxt(true); else finishVF(null,true);
+}
+
+function feedback(cls,title,body,extra){
+  $("fbox").innerHTML=`<div class="fb ${cls}" role="status"><b>${title}</b><p>${body}</p>${extra||""}</div>
+  <div class="next"><button class="btn" id="bNext">${idx+1<Q.length?"Question suivante":"Voir le résultat"}</button></div>`;
+  $("bNext").onclick=()=>{ idx++; idx<Q.length?showQ():showResult(); };
+  $("bNext").focus();
+}
+
+function finishVF(val,timeout){
+  if(answered) return; answered=true; clearInterval(tick);
+  const q=Q[order[idx]]; $("bV").disabled=$("bF").disabled=true;
+  if(val!==null) (val?$("bV"):$("bF")).classList.add("sel");
+  const ok=val===q.a, pts=ok?1:0;
+  results.push({q:q.q,pts,max:1,given:val===null?"Pas de réponse (temps écoulé)":(val?"Vrai":"Faux"),t:"vf"});
+  const verdict="La bonne réponse est : "+(q.a?"vrai":"faux")+".";
+  if(timeout&&val===null) feedback("ko","Temps écoulé",verdict+" "+esc(q.e));
+  else feedback(ok?"ok":"ko",ok?"Correct":"Incorrect",verdict+" "+esc(q.e));
+}
+
+function finishTxt(timeout){
+  if(answered) return;
+  const q=Q[order[idx]], raw=$("ans").value.trim();
+  if(!raw&&!timeout){ $("ans").focus(); return; }
+  answered=true; clearInterval(tick); $("ans").disabled=true; $("bOk").disabled=true;
+  const n=norm(raw);
+  const found=q.g.map(g=>({l:g.l,ok:g.k.some(s=>n.includes(norm(s)))}));
+  const ratio=found.filter(f=>f.ok).length/q.g.length;
+  const pts=ratio>=q.min?1:(ratio>=q.min/2?.5:0);
+  results.push({q:q.q,pts,max:1,given:raw||"Pas de réponse (temps écoulé)",t:"txt"});
+  const chips=`<div class="chips">${found.map(f=>`<span class="chip">${f.ok?"✔":"✘"} ${esc(f.l)}</span>`).join("")}</div>`;
+  const model=`<div class="model"><b>Réponse attendue</b>\n${esc(q.m)}</div>`;
+  const title=timeout&&!raw?"Temps écoulé":(pts===1?"Réponse validée":pts===.5?"Réponse partielle (0,5 point)":"Réponse insuffisante");
+  feedback(pts===1?"ok":pts===.5?"mid":"ko",title,"Éléments attendus repérés dans votre réponse :",chips+model);
+}
+
+/* ---------- Résultats ---------- */
+function showResult(){
+  const tot=results.reduce((s,r)=>s+r.pts,0), max=results.length;
+  saveScore(tot,max);
+  $("scoreTxt").textContent=`${String(tot).replace(".",",")} / ${max}`;
+  const pc=tot/max;
+  $("scoreMsg").textContent=pc>=.8?"Excellent : vous maîtrisez bien le texte.":pc>=.6?"Bon résultat. Revoyez les points manqués ci-dessous.":pc>=.4?"Des bases sont acquises, mais une nouvelle lecture du Discours s’impose.":"Reprenez le texte partie par partie, puis refaites le quiz.";
+  $("recap").innerHTML=results.map(r=>`<li class="${r.pts===1?"ok":r.pts>0?"mid":"ko"}">${esc(r.q)}<small>Votre réponse : ${esc(r.given.length>180?r.given.slice(0,180)+"…":r.given)} · ${String(r.pts).replace(".",",")} point</small></li>`).join("");
+  show("result");
+}
+
+/* ---------- Démarrage ---------- */
+(function(){ const u=load("user"); if(u&&ALLOWED.includes(u)){ user=u; enterHome(); } else show("login"); })();
+$("nbq").textContent=Q.length;
+</script>
+</body>
+</html>
